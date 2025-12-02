@@ -1,0 +1,5 @@
+# ArgoCD Installation
+
+helm repo add argo https://argoproj.github.io/argo-helm
+helm search repo argo
+helm install argo/argo-cd --generate-name
