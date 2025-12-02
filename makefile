@@ -5,4 +5,6 @@ open:
 
 docker:
 	docker build -t flask-app .
+	@echo "Building and starting Flask app..."
 	docker run -p 5001:5000 flask-app
+	@echo "Flask app running at http://localhost:5001"
