@@ -1,0 +1,28 @@
+# Example values.yaml configuration for KubeMarketApp with cert-manager
+# This shows how to configure your ingress to use automatic TLS certificates
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Add cert-manager annotation to automatically request and manage TLS certificate
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # Use letsencrypt-staging for testing first
+    # Optional: Force SSL redirect
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: tradely.live
+      paths:
+        - path: /marketapi
+          pathType: Prefix
+  tls:
+    - secretName: tradely-live-tls  # cert-manager will create this secret automatically
+      hosts:
+        - tradely.live
+
+# IMPORTANT NOTES:
+# 1. First test with letsencrypt-staging to avoid rate limits
+# 2. Once verified, change to letsencrypt-prod
+# 3. cert-manager will automatically create and renew the certificate
+# 4. The certificate will be stored in the secret specified by secretName
+# 5. Make sure your DNS points to your cluster's load balancer IP
