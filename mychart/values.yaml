@@ -14,6 +14,11 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# Authentication configuration
+auth:
+  # Name of the Kubernetes secret containing auth credentials
+  secretName: "marketapi-auth"
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
