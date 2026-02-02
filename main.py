@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from auth import auth, is_auth_configured
 import logging
 
 # Configure logging
@@ -7,12 +8,19 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+# Check authentication configuration on startup
+if is_auth_configured():
+    logger.info("✓ API authentication is configured and enabled")
+else:
+    logger.warning("⚠ API authentication is NOT configured - API endpoints are unprotected!")
+
 
 # ============================================================================
 # Net Worth API Endpoints
 # ============================================================================
 
 @app.route("/marketapi/v1/networth", methods=["GET"])
+@auth.login_required
 def get_net_worth():
     """
     Get all net worth tracking data from Google Sheets.
@@ -106,6 +114,7 @@ def get_net_worth():
 
 
 @app.route("/marketapi/v1/networth/summary", methods=["GET"])
+@auth.login_required
 def get_net_worth_summary():
     """
     Get a summary of net worth data including latest values and trends.
@@ -195,6 +204,7 @@ def health_check():
 
 
 @app.route("/marketapi/v1/networth/chart/timeseries", methods=["GET"])
+@auth.login_required
 def get_net_worth_timeseries():
     """
     Get time series data optimized for charting.
@@ -285,6 +295,7 @@ def get_net_worth_timeseries():
 
 
 @app.route("/marketapi/v1/networth/chart/allocation", methods=["GET"])
+@auth.login_required
 def get_account_allocation():
     """
     Get account allocation data for pie/donut charts.
@@ -343,6 +354,7 @@ def get_account_allocation():
 
 
 @app.route("/marketapi/v1/networth/chart/trends", methods=["GET"])
+@auth.login_required
 def get_account_trends():
     """
     Get historical trends for each account (for stacked area chart).
@@ -432,6 +444,7 @@ def get_account_trends():
 
 
 @app.route("/marketapi/v1/networth/retirement", methods=["GET"])
+@auth.login_required
 def get_retirement_metrics():
     """
     Get retirement planning metrics and projections.
@@ -534,6 +547,7 @@ def get_retirement_metrics():
 @app.route("/")
 @app.route("/marketapi")
 @app.route("/dashboard")
+@auth.login_required
 def dashboard():
     return """
     <!DOCTYPE html>
@@ -1289,8 +1303,8 @@ def dashboard():
                 document.querySelectorAll('.period-selector:not(#trendsPeriodSelector) .period-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.period-selector:not(#trendsPeriodSelector) .period-btn').forEach(b => b.classList.remove('active'));
-                        e.target.classList.add('active');
-                        currentPeriod = e.target.dataset.period;
+                        e.currentTarget.classList.add('active');
+                        currentPeriod = e.currentTarget.dataset.period;
                         loadNetWorthChart();
                     });
                 });
@@ -1299,8 +1313,8 @@ def dashboard():
                 document.querySelectorAll('#trendsPeriodSelector .period-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('#trendsPeriodSelector .period-btn').forEach(b => b.classList.remove('active'));
-                        e.target.classList.add('active');
-                        trendsPeriod = e.target.dataset.period;
+                        e.currentTarget.classList.add('active');
+                        trendsPeriod = e.currentTarget.dataset.period;
                         loadTrendsChart();
                     });
                 });
@@ -1309,8 +1323,8 @@ def dashboard():
                 document.querySelectorAll('.tab').forEach(tab => {
                     tab.addEventListener('click', (e) => {
                         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                        e.target.classList.add('active');
-                        loadTableData(e.target.dataset.view);
+                        e.currentTarget.classList.add('active');
+                        loadTableData(e.currentTarget.dataset.view);
                     });
                 });
             }
