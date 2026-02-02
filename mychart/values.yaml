@@ -19,6 +19,11 @@ auth:
   # Name of the Kubernetes secret containing auth credentials
   secretName: "marketapi-auth"
 
+# Google Sheets credentials
+googleCredentials:
+  # Name of the Kubernetes secret containing Google service account JSON
+  secretName: "google-credentials"
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
