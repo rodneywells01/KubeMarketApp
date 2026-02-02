@@ -1431,7 +1431,7 @@ def dashboard():
             
             async function loadSummary() {
                 try {
-                    const res = await fetch('/marketapi/v1/networth/summary');
+                    const res = await fetch('/marketapi/v1/networth/summary', { credentials: 'include' });
                     const data = await res.json();
                     
                     if (data.success) {
@@ -1470,7 +1470,7 @@ def dashboard():
             
             async function loadNetWorthChart() {
                 try {
-                    const res = await fetch(`/marketapi/v1/networth/chart/timeseries?period=${currentPeriod}&metrics=net_worth,investible_assets`);
+                    const res = await fetch(`/marketapi/v1/networth/chart/timeseries?period=${currentPeriod}&metrics=net_worth,investible_assets`, { credentials: 'include' });
                     const data = await res.json();
                     
                     if (data.success) {
@@ -1502,7 +1502,7 @@ def dashboard():
             
             async function loadAllocation() {
                 try {
-                    const res = await fetch('/marketapi/v1/networth/chart/allocation');
+                    const res = await fetch('/marketapi/v1/networth/chart/allocation', { credentials: 'include' });
                     const data = await res.json();
                     
                     if (data.success) {
@@ -1536,7 +1536,7 @@ def dashboard():
             
             async function loadTrendsChart() {
                 try {
-                    const res = await fetch(`/marketapi/v1/networth/chart/trends?period=${trendsPeriod}`);
+                    const res = await fetch(`/marketapi/v1/networth/chart/trends?period=${trendsPeriod}`, { credentials: 'include' });
                     const data = await res.json();
                     
                     if (data.success) {
@@ -1551,7 +1551,7 @@ def dashboard():
             
             async function loadRetirement() {
                 try {
-                    const res = await fetch('/marketapi/v1/networth/retirement');
+                    const res = await fetch('/marketapi/v1/networth/retirement', { credentials: 'include' });
                     const data = await res.json();
                     
                     if (data.success) {
@@ -1592,7 +1592,7 @@ def dashboard():
             async function loadTableData(view) {
                 try {
                     const limit = view === 'recent' ? '&limit=20' : '';
-                    const res = await fetch(`/marketapi/v1/networth?${limit}`);
+                    const res = await fetch(`/marketapi/v1/networth?${limit}`, { credentials: 'include' });
                     const data = await res.json();
                     
                     if (data.success) {
