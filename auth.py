@@ -3,9 +3,16 @@ Authentication module for MarketApp API.
 
 Implements HTTP Basic Authentication using credentials from environment variables
 stored in Kubernetes secrets.
+
+Authentication behavior:
+- Dashboard pages require Basic Auth (browser prompts for credentials)
+- API endpoints called from the dashboard use session-based auth (after initial login)
+- External API calls require Basic Auth headers
 """
 
 import os
+from functools import wraps
+from flask import session, request
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
@@ -24,14 +31,39 @@ API_PASSWORD = os.environ.get("API_PASSWORD")
 API_PASSWORD_HASH = os.environ.get("API_PASSWORD_HASH")
 
 
+def _verify_credentials(username, password):
+    """
+    Internal function to verify credentials.
+    
+    Returns:
+        True if credentials are valid, False otherwise
+    """
+    if not API_USERNAME:
+        return False
+    
+    if username != API_USERNAME:
+        return False
+    
+    # Check hashed password first (more secure)
+    if API_PASSWORD_HASH:
+        return check_password_hash(API_PASSWORD_HASH, password)
+    
+    # Fall back to plain password
+    if API_PASSWORD:
+        return password == API_PASSWORD
+    
+    return False
+
+
 @auth.verify_password
 def verify_password(username, password):
     """
     Verify username and password for API access.
     
-    Supports two modes:
-    1. Plain password comparison (API_PASSWORD env var)
+    Supports three modes:
+    1. Session-based auth (for dashboard API calls after login)
     2. Hashed password comparison (API_PASSWORD_HASH env var)
+    3. Plain password comparison (API_PASSWORD env var)
     
     Args:
         username: Username provided in the request
@@ -40,6 +72,11 @@ def verify_password(username, password):
     Returns:
         True if authentication succeeds, False otherwise
     """
+    # First check if user has a valid session (from dashboard login)
+    if session.get('authenticated'):
+        logger.debug("User authenticated via session")
+        return True
+    
     if not API_USERNAME:
         logger.warning("API_USERNAME not configured. Authentication disabled!")
         return False
@@ -52,6 +89,9 @@ def verify_password(username, password):
     if API_PASSWORD_HASH:
         if check_password_hash(API_PASSWORD_HASH, password):
             logger.info(f"User '{username}' authenticated successfully (hashed)")
+            # Store auth in session for subsequent requests
+            session['authenticated'] = True
+            session['username'] = username
             return True
         else:
             logger.warning(f"Authentication failed: Invalid password for user '{username}'")
@@ -61,6 +101,9 @@ def verify_password(username, password):
     if API_PASSWORD:
         if password == API_PASSWORD:
             logger.info(f"User '{username}' authenticated successfully (plain)")
+            # Store auth in session for subsequent requests
+            session['authenticated'] = True
+            session['username'] = username
             return True
         else:
             logger.warning(f"Authentication failed: Invalid password for user '{username}'")

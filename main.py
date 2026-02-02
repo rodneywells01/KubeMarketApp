@@ -1,12 +1,17 @@
 from flask import Flask, jsonify, request
 from auth import auth, is_auth_configured
 import logging
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# Configure secret key for session management
+# In production, this should be set via environment variable
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
 
 # Check authentication configuration on startup
 if is_auth_configured():

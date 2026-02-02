@@ -44,6 +44,12 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.auth.secretName | default "marketapi-auth" }}
                   key: password
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.secretName | default "marketapi-auth" }}
+                  key: flask-secret-key
+                  optional: true
           ports:
             - name: http
               containerPort: 5000
