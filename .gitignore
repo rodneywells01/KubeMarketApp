@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Google API credentials (NEVER commit these!)
+credentials.json
+*-credentials.json
+service-account*.json
