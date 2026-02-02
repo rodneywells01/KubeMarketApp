@@ -6,10 +6,10 @@ WORKDIR /app
 RUN pip install --upgrade pip && pip install pipenv
 
 # Copy dependency files
-COPY Pipfile Pipfile.lock* ./
+COPY Pipfile Pipfile.lock ./
 
 # Install dependencies from Pipfile
-RUN pipenv install --system --deploy --ignore-pipfile
+RUN pipenv install --system --deploy
 
 # Copy application code
 COPY . .
