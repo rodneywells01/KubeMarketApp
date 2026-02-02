@@ -1,10 +1,18 @@
 [project]
 name = "marketapp"
 version = "0.1.0"
-description = "Add your description here"
+description = "Market Analysis Platform with net worth tracking and data ingestion"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "flask>=3.1.1",
     "requests>=2.32.3",
+    "google-api-python-client>=2.100.0",
+    "google-auth>=2.23.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
 ]
