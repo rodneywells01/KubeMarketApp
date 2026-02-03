@@ -957,6 +957,103 @@ def dashboard():
                 color: var(--gray);
             }
             
+            /* Custom Withdrawal Input */
+            .custom-withdrawal-section {
+                margin-top: 20px;
+                padding: 20px;
+                background: var(--light);
+                border-radius: 12px;
+            }
+            
+            .custom-withdrawal-title {
+                font-size: 0.9em;
+                font-weight: 600;
+                color: var(--dark);
+                margin-bottom: 12px;
+            }
+            
+            .custom-withdrawal-form {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            
+            .custom-withdrawal-input {
+                width: 80px;
+                padding: 10px 12px;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                font-size: 1em;
+                font-weight: 600;
+                text-align: center;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+            
+            .custom-withdrawal-input:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            }
+            
+            .custom-withdrawal-btn {
+                padding: 10px 16px;
+                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 0.9em;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            
+            .custom-withdrawal-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            }
+            
+            .custom-withdrawal-result {
+                display: none;
+                margin-top: 15px;
+                padding: 15px;
+                background: white;
+                border-radius: 10px;
+                border: 2px solid var(--primary);
+            }
+            
+            .custom-withdrawal-result.show {
+                display: block;
+            }
+            
+            .custom-result-rate {
+                font-size: 1.2em;
+                font-weight: 700;
+                color: var(--primary);
+            }
+            
+            .custom-result-values {
+                display: flex;
+                gap: 20px;
+                margin-top: 10px;
+            }
+            
+            .custom-result-item {
+                text-align: center;
+            }
+            
+            .custom-result-amount {
+                font-size: 1.1em;
+                font-weight: 600;
+                color: var(--dark);
+            }
+            
+            .custom-result-label {
+                font-size: 0.75em;
+                color: var(--gray);
+                margin-top: 2px;
+            }
+            
             /* Data Table */
             .table-section {
                 background: white;
@@ -1199,6 +1296,38 @@ def dashboard():
                                     <div class="withdrawal-rate">5%</div>
                                     <div class="withdrawal-amount" id="w5pct">--</div>
                                     <div class="withdrawal-monthly" id="w5pctMonthly">--/mo</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Withdrawal Calculator -->
+                            <div class="custom-withdrawal-section">
+                                <div class="custom-withdrawal-title">📊 Custom Withdrawal Rate</div>
+                                <div class="custom-withdrawal-form">
+                                    <input type="number" 
+                                           id="customWithdrawalInput" 
+                                           class="custom-withdrawal-input" 
+                                           placeholder="%" 
+                                           min="0.1" 
+                                           max="100" 
+                                           step="0.1"
+                                           value="">
+                                    <span style="font-weight: 500; color: var(--gray);">%</span>
+                                    <button type="button" class="custom-withdrawal-btn" onclick="calculateCustomWithdrawal()">
+                                        Calculate
+                                    </button>
+                                </div>
+                                <div class="custom-withdrawal-result" id="customWithdrawalResult">
+                                    <div class="custom-result-rate" id="customResultRate">--</div>
+                                    <div class="custom-result-values">
+                                        <div class="custom-result-item">
+                                            <div class="custom-result-amount" id="customAnnual">--</div>
+                                            <div class="custom-result-label">Annual</div>
+                                        </div>
+                                        <div class="custom-result-item">
+                                            <div class="custom-result-amount" id="customMonthly">--</div>
+                                            <div class="custom-result-label">Monthly</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1588,11 +1717,52 @@ def dashboard():
                             borderRadius: 6
                         }];
                         projectionChart.update();
+                        
+                        // Store net worth for custom withdrawal calculations
+                        window.currentNetWorth = data.current.net_worth;
                     }
                 } catch (err) {
                     console.error('Failed to load retirement data:', err);
                 }
             }
+            
+            // Custom withdrawal rate calculator
+            function calculateCustomWithdrawal() {
+                const input = document.getElementById('customWithdrawalInput');
+                const resultDiv = document.getElementById('customWithdrawalResult');
+                const rate = parseFloat(input.value);
+                
+                if (isNaN(rate) || rate <= 0 || rate > 100) {
+                    alert('Please enter a valid withdrawal rate between 0.1 and 100');
+                    return;
+                }
+                
+                const netWorth = window.currentNetWorth || 0;
+                if (netWorth <= 0) {
+                    alert('Net worth data not available. Please wait for data to load.');
+                    return;
+                }
+                
+                const annual = netWorth * (rate / 100);
+                const monthly = annual / 12;
+                
+                document.getElementById('customResultRate').textContent = rate + '% Withdrawal';
+                document.getElementById('customAnnual').textContent = formatCurrency(annual);
+                document.getElementById('customMonthly').textContent = formatCurrency(monthly) + '/mo';
+                resultDiv.classList.add('show');
+            }
+            
+            // Allow Enter key to trigger calculation
+            document.addEventListener('DOMContentLoaded', function() {
+                const input = document.getElementById('customWithdrawalInput');
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            calculateCustomWithdrawal();
+                        }
+                    });
+                }
+            });
             
             async function loadTableData(view) {
                 try {
