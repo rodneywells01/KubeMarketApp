@@ -9,6 +9,7 @@ google-auth-httplib2 = "*"
 google-auth-oauthlib = "*"
 flask = "*"
 flask-httpauth = "*"
+gunicorn = "*"
 
 [dev-packages]
 
