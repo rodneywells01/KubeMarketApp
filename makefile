@@ -38,3 +38,7 @@ login-ghcr:
 .PHONY: release
 release: build-ghcr push-ghcr
 	@echo "Released $(IMAGE_NAME):$(GIT_SHA)"
+
+.PHONY: perf-test
+perf-test:
+	python3 scripts/perf_test.py
