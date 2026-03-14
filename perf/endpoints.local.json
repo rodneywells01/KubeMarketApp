@@ -1,0 +1,18 @@
+{
+  "endpoints": [
+    {
+      "name": "landing_page",
+      "method": "GET",
+      "path": "/",
+      "expected_statuses": [200],
+      "weight": 5
+    },
+    {
+      "name": "not_found_probe",
+      "method": "GET",
+      "path": "/does-not-exist",
+      "expected_statuses": [404],
+      "weight": 1
+    }
+  ]
+}
