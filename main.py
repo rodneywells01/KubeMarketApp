@@ -497,15 +497,15 @@ def get_retirement_metrics():
                 "annual": to_float(latest.withdrawal_3_percent),
                 "monthly": to_float(latest.withdrawal_3_percent) / 12 if latest.withdrawal_3_percent else None,
             },
+            "balanced_3_5pct": {
+                "rate": 3.5,
+                "annual": net_worth * 0.035,
+                "monthly": net_worth * 0.035 / 12,
+            },
             "standard_4pct": {
                 "rate": 4,
                 "annual": to_float(latest.withdrawal_4_percent),
                 "monthly": to_float(latest.withdrawal_4_percent) / 12 if latest.withdrawal_4_percent else None,
-            },
-            "aggressive_5pct": {
-                "rate": 5,
-                "annual": net_worth * 0.05,
-                "monthly": net_worth * 0.05 / 12,
             }
         }
         
@@ -1288,14 +1288,14 @@ def dashboard():
                                     <div class="withdrawal-monthly" id="w3pctMonthly">--/mo</div>
                                 </div>
                                 <div class="withdrawal-card">
+                                    <div class="withdrawal-rate">3.5%</div>
+                                    <div class="withdrawal-amount" id="w35pct">--</div>
+                                    <div class="withdrawal-monthly" id="w35pctMonthly">--/mo</div>
+                                </div>
+                                <div class="withdrawal-card">
                                     <div class="withdrawal-rate">4%</div>
                                     <div class="withdrawal-amount" id="w4pct">--</div>
                                     <div class="withdrawal-monthly" id="w4pctMonthly">--/mo</div>
-                                </div>
-                                <div class="withdrawal-card">
-                                    <div class="withdrawal-rate">5%</div>
-                                    <div class="withdrawal-amount" id="w5pct">--</div>
-                                    <div class="withdrawal-monthly" id="w5pctMonthly">--/mo</div>
                                 </div>
                             </div>
                             
@@ -1702,10 +1702,10 @@ def dashboard():
                         // Withdrawal amounts
                         document.getElementById('w3pct').textContent = formatCurrency(w.conservative_3pct.annual);
                         document.getElementById('w3pctMonthly').textContent = formatCurrency(w.conservative_3pct.monthly) + '/mo';
+                        document.getElementById('w35pct').textContent = formatCurrency(w.balanced_3_5pct.annual);
+                        document.getElementById('w35pctMonthly').textContent = formatCurrency(w.balanced_3_5pct.monthly) + '/mo';
                         document.getElementById('w4pct').textContent = formatCurrency(w.standard_4pct.annual);
                         document.getElementById('w4pctMonthly').textContent = formatCurrency(w.standard_4pct.monthly) + '/mo';
-                        document.getElementById('w5pct').textContent = formatCurrency(w.aggressive_5pct.annual);
-                        document.getElementById('w5pctMonthly').textContent = formatCurrency(w.aggressive_5pct.monthly) + '/mo';
                         
                         // Projection chart
                         const projections = data.projections_8pct;
@@ -1811,5 +1811,3 @@ def dashboard():
     </body>
     </html>
     """
-
-
