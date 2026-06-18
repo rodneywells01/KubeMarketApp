@@ -6,10 +6,13 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "flask>=3.1.1",
+    "flask-httpauth>=4.8.0",
     "gunicorn>=23.0.0",
     "requests>=2.32.3",
     "google-api-python-client>=2.100.0",
     "google-auth>=2.23.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-auth-oauthlib>=1.2.0",
 ]
 
 [project.optional-dependencies]
